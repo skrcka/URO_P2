@@ -14,5 +14,5 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -g")
 add_compile_options(-Wall -Wextra -pedantic)
 
 # Use main.cpp to call and debug your code
-add_executable(main main.cpp gui.ui login_widget.ui orders_widget.ui stock_widget.ui bills_widget.ui)
+add_executable(main main.cpp gui.cpp bills_widget.cpp orders_widget.cpp stock_widget.cpp login_widget.cpp gui.ui login_widget.ui orders_widget.ui stock_widget.ui bills_widget.ui)
 target_link_libraries(main PRIVATE Qt6::Widgets)

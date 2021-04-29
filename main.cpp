@@ -1,13 +1,11 @@
 #include <QApplication>
 #include <QInputDialog>
 #include <QMessageBox>
-#include "ui_gui.h"
-#include "ui_login_widget.h"
-#include "ui_stock_widget.h"
-#include "ui_bills_widget.h"
-#include "ui_orders_widget.h"
+#include <QObject>
+#include "gui.h"
 #include <string>
 #include <vector>
+
 
 class User{
 private:
@@ -24,11 +22,12 @@ public:
 	}
 };
 
-Ui::DenRoze3 ui;
 int activeWidget = 0;
 std::vector<User> users;
 User activeUser;
 
+//QObject::connect(ui.login_widget->login_button, SIGNAL(clicked()), ui, SLOT(loginclick()));
+/*
 void update_widgets(){
 	ui.menu_widget->hide();
 	ui.stock_widget->hide();
@@ -63,24 +62,16 @@ void login(){
 		}
 	}
 }
-
+*/
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     QMainWindow widget;
-    ui.setupUi(&widget);
-	Ui::bills_widget bw;
-	Ui::orders_widget ow;
-	Ui::stock_widget sw;
-	Ui::login_widget lw;
-	bw.setupUi(ui.bills_widget);
-	ow.setupUi(ui.orders_widget);
-	lw.setupUi(ui.login_widget);
-	sw.setupUi(ui.stock_widget);
+	DenRoze3 ui{&widget};
 
 	users.emplace_back("skrcka", "1337");
-	update_widgets();
-
-    widget.show();
+	ui.show();
+	//lw.show();
+	//update_widgets();
     return app.exec();
 }
