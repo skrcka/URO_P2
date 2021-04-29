@@ -32,7 +32,10 @@ public:
 
 private slots:
 	void login();
-	
+	void stock();
+	void bills();
+	void orders();
+
 private:
     Ui::DenRoze3 *ui;
 };

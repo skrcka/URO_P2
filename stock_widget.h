@@ -14,6 +14,7 @@ class stock_widget : public QWidget
 public:
     explicit stock_widget(QWidget *parent = nullptr);
     ~stock_widget();
+	Ui::stock_widget* getui();
 
 private:
     Ui::stock_widget *ui;

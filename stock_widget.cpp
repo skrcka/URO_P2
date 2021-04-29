@@ -12,3 +12,7 @@ stock_widget::~stock_widget()
 {
     delete ui;
 }
+
+Ui::stock_widget* stock_widget::getui(){
+	return this->ui;
+}
