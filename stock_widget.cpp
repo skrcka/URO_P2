@@ -13,6 +13,14 @@ stock_widget::~stock_widget()
     delete ui;
 }
 
-Ui::stock_widget* stock_widget::getui(){
-	return this->ui;
+QTableWidget* stock_widget::get_stock_table(){
+	return ui->stock_list;
+}
+
+QPushButton* stock_widget::getAdd(){
+	return ui->stock_add_button;
+}
+
+QPushButton* stock_widget::getRem(){
+	return ui->stock_delete_button;
 }

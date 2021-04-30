@@ -7,6 +7,7 @@
 #include "bills_widget.h"
 #include "orders_widget.h"
 #include "User.h"
+#include "Item.h"
 #include <vector>
 
 QT_BEGIN_NAMESPACE
@@ -25,10 +26,12 @@ public:
 	bills_widget *bw;
 	orders_widget *ow;
 	std::vector<User> users;
+	std::vector<Item> items;
 	User activeUser;
 	int activeWindow;
 
 	void update_widgets();
+	void refresh_stock();
 
 private slots:
 	void login();

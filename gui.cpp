@@ -7,13 +7,23 @@ DenRoze3::DenRoze3(QWidget *parent)
 {
     ui->setupUi(this);
 	this->activeWindow=1;
+	
 
 	// widgets
 	this->lw = new login_widget{ui->login_widget};
 	this->sw = new stock_widget{ui->stock_widget};
 	this->bw = new bills_widget{ui->bills_widget};
 	this->ow = new orders_widget{ui->orders_widget};
-
+	/*
+	this->ui->login_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	this->ui->stock_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	this->ui->bills_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	this->ui->orders_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	this->lw->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	this->sw->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	this->bw->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	this->ow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	*/
 	// menu buttons
 	connect(lw->getButton(), SIGNAL(clicked()), SLOT(login()));
 	connect(ui->stock_button, SIGNAL(clicked()), SLOT(stock()));
@@ -21,12 +31,37 @@ DenRoze3::DenRoze3(QWidget *parent)
 	connect(ui->orders_button, SIGNAL(clicked()), SLOT(orders()));
 
 	users.emplace_back("skrcka", "1337");
+	items.emplace_back("1", "test1", "test1", "1", "1", "1", "1");
+	items.emplace_back("2", "test2", "test2", "2", "2", "2", "2");
+	items.emplace_back("3", "test3", "test3", "3", "3", "3", "3");
 
 	//stock
-	//sw->getui()->stock_list->setRowCount(10);
-	//sw->getui()->stock_list->setColumnCount(5);
+	this->sw->get_stock_table()->setRowCount(items.size());
+	this->sw->get_stock_table()->setColumnCount(7);
 	//QHeaderView* stock_header = new QHeaderView();
-	//w->getui()->setHorizontalHeaderLabels(stock_header);
+	QList<QString>* stock_header = new QList<QString>();
+	stock_header->append(QString("id"));
+	stock_header->append(QString("name"));
+	stock_header->append(QString("code"));
+	stock_header->append(QString("price"));
+	stock_header->append(QString("dph"));
+	stock_header->append(QString("count"));
+	stock_header->append(QString("mincount"));
+	this->sw->get_stock_table()->setHorizontalHeaderLabels(*stock_header);
+	refresh_stock();
+}
+
+void DenRoze3::refresh_stock(){
+	this->sw->get_stock_table()->clear();
+	for(size_t i=0; i < items.size(); i++){
+		this->sw->get_stock_table()->setItem(i, 0, new QTableWidgetItem(items[i].id.c_str()));
+		this->sw->get_stock_table()->setItem(i, 1, new QTableWidgetItem(items[i].name.c_str()));
+		this->sw->get_stock_table()->setItem(i, 2, new QTableWidgetItem(items[i].code.c_str()));
+		this->sw->get_stock_table()->setItem(i, 3, new QTableWidgetItem(items[i].price.c_str()));
+		this->sw->get_stock_table()->setItem(i, 4, new QTableWidgetItem(items[i].dph.c_str()));
+		this->sw->get_stock_table()->setItem(i, 5, new QTableWidgetItem(items[i].count.c_str()));
+		this->sw->get_stock_table()->setItem(i, 6, new QTableWidgetItem(items[i].mincount.c_str()));
+	}
 }
 
 void DenRoze3::login(){
