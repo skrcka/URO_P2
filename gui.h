@@ -9,6 +9,7 @@
 #include "User.h"
 #include "Item.h"
 #include <vector>
+#include <iostream>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class DenRoze3; }
@@ -38,6 +39,8 @@ private slots:
 	void stock();
 	void bills();
 	void orders();
+	void addStock();
+	void remStock();
 
 private:
     Ui::DenRoze3 *ui;

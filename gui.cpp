@@ -38,6 +38,7 @@ DenRoze3::DenRoze3(QWidget *parent)
 	//stock
 	this->sw->get_stock_table()->setRowCount(items.size());
 	this->sw->get_stock_table()->setColumnCount(7);
+	
 	//QHeaderView* stock_header = new QHeaderView();
 	QList<QString>* stock_header = new QList<QString>();
 	stock_header->append(QString("id"));
@@ -48,11 +49,14 @@ DenRoze3::DenRoze3(QWidget *parent)
 	stock_header->append(QString("count"));
 	stock_header->append(QString("mincount"));
 	this->sw->get_stock_table()->setHorizontalHeaderLabels(*stock_header);
+	connect(sw->getAdd(), SIGNAL(clicked()), SLOT(addStock()));
+	connect(sw->getRem(), SIGNAL(clicked()), SLOT(remStock()));
 	refresh_stock();
 }
 
 void DenRoze3::refresh_stock(){
 	this->sw->get_stock_table()->clear();
+	this->sw->get_stock_table()->setRowCount(items.size());
 	for(size_t i=0; i < items.size(); i++){
 		this->sw->get_stock_table()->setItem(i, 0, new QTableWidgetItem(items[i].id.c_str()));
 		this->sw->get_stock_table()->setItem(i, 1, new QTableWidgetItem(items[i].name.c_str()));
@@ -76,6 +80,24 @@ void DenRoze3::login(){
 				return;
 			}
 		}
+	}
+}
+void DenRoze3::addStock(){
+	items.emplace_back();
+	refresh_stock();
+}
+void DenRoze3::remStock(){
+	/*
+	stock_select->hasSelection(); //check if has selection
+	stock_select->selectedRows(); // return selected row(s)
+	stock_select->selectedColumns(); // return selected column(s)
+	*/
+	if(this->sw->get_stock_table()->selectionModel()->hasSelection()){
+		QModelIndexList selection = this->sw->get_stock_table()->selectionModel()->selectedRows();
+		int row = selection.at(0).row();
+		std::cout << row << std::endl;
+		items.erase(items.begin() + row);
+		refresh_stock();
 	}
 }
 

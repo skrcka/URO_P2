@@ -96,7 +96,7 @@
          <item>
           <widget class="QPushButton" name="stock_delete_button">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
