@@ -8,6 +8,7 @@
 #include "orders_widget.h"
 #include "User.h"
 #include "Item.h"
+#include "Bill.h"
 #include <vector>
 #include <iostream>
 
@@ -28,9 +29,12 @@ public:
 	orders_widget *ow;
 	std::vector<User> users;
 	std::vector<Item> items;
+	std::vector<Bill> billvector;
 	User activeUser;
+	int activeBill;
 	int activeWindow;
 
+	void refresh_bill();
 	void update_widgets();
 	void refresh_stock();
 
@@ -41,6 +45,11 @@ private slots:
 	void orders();
 	void addStock();
 	void remStock();
+	void nextBill();
+	void prevBill();
+	void addBill();
+	void delBill();
+	void remBill();
 
 private:
     Ui::DenRoze3 *ui;
