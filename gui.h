@@ -9,6 +9,8 @@
 #include "User.h"
 #include "Item.h"
 #include "Bill.h"
+#include "Order.h"
+#include "Customer.h"
 #include <vector>
 #include <iostream>
 
@@ -30,11 +32,15 @@ public:
 	std::vector<User> users;
 	std::vector<Item> items;
 	std::vector<Bill> billvector;
+	std::vector<Order> ordervector;
+	std::vector<Customer> customers;
 	User activeUser;
 	int activeBill;
+	int activeOrder;
 	int activeWindow;
 
 	void refresh_bill();
+	void refresh_order();
 	void update_widgets();
 	void refresh_stock();
 
@@ -50,6 +56,11 @@ private slots:
 	void addBill();
 	void delBill();
 	void remBill();
+	void nextOrder();
+	void prevOrder();
+	void addOrder();
+	void delOrder();
+	void remOrder();
 
 private:
     Ui::DenRoze3 *ui;

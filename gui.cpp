@@ -32,6 +32,8 @@ DenRoze3::DenRoze3(QWidget *parent)
 	connect(ui->bills_button, SIGNAL(clicked()), SLOT(bills()));
 	connect(ui->orders_button, SIGNAL(clicked()), SLOT(orders()));
 
+	customers.emplace_back("Adam", "Skkr", "Venkovni", "Opava", "42020", "CZ", "900900900", "mail@mail.cz");
+	customers.emplace_back("Petr", "Mol", "Prajzska", "Ostrava", "69699", "CZ", "666666666", "email@email.cz");
 	users.emplace_back("skrcka", "1337");
 	items.emplace_back("1", "test1", "test1", "1", "1", "1", "1");
 	items.emplace_back("2", "test2", "test2", "2", "2", "2", "2");
@@ -44,6 +46,16 @@ DenRoze3::DenRoze3(QWidget *parent)
 	billvector[1].items.emplace_back(items[1], "1");
 	billvector[1].items.emplace_back(items[2], "2");
 	activeBill = 0;
+	activeOrder = 0;
+	ordervector.emplace_back();
+	ordervector[0].customer = customers[0];
+	ordervector[0].items.emplace_back(items[0], "5");
+	ordervector[0].items.emplace_back(items[1], "10");
+	ordervector[0].items.emplace_back(items[2], "4");
+	ordervector.emplace_back();
+	ordervector[1].customer = customers[1];
+	ordervector[1].items.emplace_back(items[1], "1");
+	ordervector[1].items.emplace_back(items[2], "2");
 
 	//stock
 	this->sw->get_stock_table()->setRowCount(items.size());
@@ -71,7 +83,6 @@ DenRoze3::DenRoze3(QWidget *parent)
 	bill_stock_header->append(QString("dph"));
 	this->bw->get_stock_table()->setHorizontalHeaderLabels(*bill_stock_header);
 
-	this->bw->get_bill_table()->setRowCount(items.size());
 	this->bw->get_bill_table()->setColumnCount(4);
 	QList<QString>* bill_item_header = new QList<QString>();
 	bill_item_header->append(QString("name"));
@@ -85,8 +96,32 @@ DenRoze3::DenRoze3(QWidget *parent)
 	connect(bw->getRem(), SIGNAL(clicked()), SLOT(remBill()));
 	connect(bw->getDel(), SIGNAL(clicked()), SLOT(delBill()));
 
+	//orders
+	this->ow->get_stock_table()->setRowCount(items.size());
+	this->ow->get_stock_table()->setColumnCount(4);
+	QList<QString>* order_stock_header = new QList<QString>();
+	order_stock_header->append(QString("name"));
+	order_stock_header->append(QString("code"));
+	order_stock_header->append(QString("price"));
+	order_stock_header->append(QString("dph"));
+	this->ow->get_stock_table()->setHorizontalHeaderLabels(*bill_stock_header);
+
+	this->ow->get_order_table()->setColumnCount(4);
+	QList<QString>* order_item_header = new QList<QString>();
+	order_item_header->append(QString("name"));
+	order_item_header->append(QString("price"));
+	order_item_header->append(QString("dph"));
+	order_item_header->append(QString("count"));
+	this->ow->get_order_table()->setHorizontalHeaderLabels(*order_item_header);
+	connect(ow->getNext(), SIGNAL(clicked()), SLOT(nextOrder()));
+	connect(ow->getPrev(), SIGNAL(clicked()), SLOT(prevOrder()));
+	connect(ow->getAdd(), SIGNAL(clicked()), SLOT(addOrder()));
+	connect(ow->getRem(), SIGNAL(clicked()), SLOT(remOrder()));
+	connect(ow->getDel(), SIGNAL(clicked()), SLOT(delOrder()));
+
 	refresh_stock();
 	refresh_bill();
+	refresh_order();
 }
 
 void DenRoze3::refresh_bill(){
@@ -102,11 +137,36 @@ void DenRoze3::refresh_bill(){
 	}
 }
 
+void DenRoze3::refresh_order(){
+	this->ow->getOrderCurrent()->setText(std::to_string(activeOrder).c_str());
+
+	this->ow->getCustName()->setText(ordervector[activeOrder].customer.name.c_str());
+	this->ow->getCustSurname()->setText(ordervector[activeOrder].customer.surname.c_str());
+	this->ow->getCustStreet()->setText(ordervector[activeOrder].customer.street.c_str());
+	this->ow->getCustCity()->setText(ordervector[activeOrder].customer.city.c_str());
+	this->ow->getCustPSC()->setText(ordervector[activeOrder].customer.psc.c_str());
+	this->ow->getCustCountry()->setText(ordervector[activeOrder].customer.country.c_str());
+	this->ow->getCustPhone()->setText(ordervector[activeOrder].customer.phone.c_str());
+	this->ow->getCustEmail()->setText(ordervector[activeOrder].customer.email.c_str());
+
+	this->ow->get_order_table()->clear();
+	this->ow->get_order_table()->setRowCount(ordervector[activeOrder].items.size());
+
+	for(size_t i = 0; i < ordervector[activeOrder].items.size(); i++){
+		this->ow->get_order_table()->setItem(i, 0, new QTableWidgetItem(ordervector[activeOrder].items[i].item.name.c_str()));
+		this->ow->get_order_table()->setItem(i, 1, new QTableWidgetItem(ordervector[activeOrder].items[i].item.price.c_str()));
+		this->ow->get_order_table()->setItem(i, 2, new QTableWidgetItem(ordervector[activeOrder].items[i].item.dph.c_str()));
+		this->ow->get_order_table()->setItem(i, 3, new QTableWidgetItem(ordervector[activeOrder].items[i].count.c_str()));
+	}
+}
+
 void DenRoze3::refresh_stock(){
 	this->sw->get_stock_table()->clear();
 	this->sw->get_stock_table()->setRowCount(items.size());
 	this->bw->get_stock_table()->clear();
 	this->bw->get_stock_table()->setRowCount(items.size());
+	this->ow->get_stock_table()->clear();
+	this->ow->get_stock_table()->setRowCount(items.size());
 	for(size_t i=0; i < items.size(); i++){
 		this->sw->get_stock_table()->setItem(i, 0, new QTableWidgetItem(items[i].id.c_str()));
 		this->sw->get_stock_table()->setItem(i, 1, new QTableWidgetItem(items[i].name.c_str()));
@@ -120,6 +180,11 @@ void DenRoze3::refresh_stock(){
 		this->bw->get_stock_table()->setItem(i, 1, new QTableWidgetItem(items[i].code.c_str()));
 		this->bw->get_stock_table()->setItem(i, 2, new QTableWidgetItem(items[i].price.c_str()));
 		this->bw->get_stock_table()->setItem(i, 3, new QTableWidgetItem(items[i].dph.c_str()));
+		
+		this->ow->get_stock_table()->setItem(i, 0, new QTableWidgetItem(items[i].name.c_str()));
+		this->ow->get_stock_table()->setItem(i, 1, new QTableWidgetItem(items[i].code.c_str()));
+		this->ow->get_stock_table()->setItem(i, 2, new QTableWidgetItem(items[i].price.c_str()));
+		this->ow->get_stock_table()->setItem(i, 3, new QTableWidgetItem(items[i].dph.c_str()));
 	}
 }
 
@@ -145,11 +210,24 @@ void DenRoze3::nextBill(){
 	}
 	refresh_bill();
 }
+void DenRoze3::nextOrder(){
+	activeOrder++;
+	if(activeOrder >= ordervector.size()){
+		ordervector.emplace_back();
+	}
+	refresh_order();
+}
 void DenRoze3::prevBill(){
 	if(activeBill-1 >= 0){
 		activeBill--;
 	}
 	refresh_bill();
+}
+void DenRoze3::prevOrder(){
+	if(activeOrder-1 >= 0){
+		activeOrder--;
+	}
+	refresh_order();
 }
 void DenRoze3::delBill(){
 	billvector.erase(billvector.begin() + activeBill);
@@ -158,6 +236,14 @@ void DenRoze3::delBill(){
 	if(activeBill <= billvector.size())
 		billvector.emplace_back();
 	refresh_bill();
+}
+void DenRoze3::delOrder(){
+	ordervector.erase(ordervector.begin() + activeOrder);
+	if(activeOrder != 0)
+		activeOrder--;
+	if(activeOrder <= ordervector.size())
+		ordervector.emplace_back();
+	refresh_order();
 }
 void DenRoze3::addBill(){
 	if(this->bw->get_stock_table()->selectionModel()->hasSelection()){
@@ -168,6 +254,15 @@ void DenRoze3::addBill(){
 		refresh_bill();
 	}
 }
+void DenRoze3::addOrder(){
+	if(this->ow->get_stock_table()->selectionModel()->hasSelection()){
+		for(auto s : this->ow->get_stock_table()->selectionModel()->selectedIndexes()){
+			int row = s.row();
+			ordervector[activeOrder].items.emplace_back(items[row], "1");
+		}
+		refresh_order();
+	}
+}
 void DenRoze3::remBill(){
 	if(this->bw->get_bill_table()->selectionModel()->hasSelection()){
 		for(auto s : this->bw->get_bill_table()->selectionModel()->selectedIndexes()){
@@ -175,6 +270,15 @@ void DenRoze3::remBill(){
 			billvector[activeBill].items.erase(billvector[activeBill].items.begin() + row);
 		}
 		refresh_bill();
+	}
+}
+void DenRoze3::remOrder(){
+	if(this->ow->get_order_table()->selectionModel()->hasSelection()){
+		for(auto s : this->ow->get_order_table()->selectionModel()->selectedIndexes()){
+			int row = s.row();
+			ordervector[activeOrder].items.erase(ordervector[activeOrder].items.begin() + row);
+		}
+		refresh_order();
 	}
 }
 
