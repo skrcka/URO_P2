@@ -168,7 +168,15 @@ void DenRoze3::addBill(){
 		refresh_bill();
 	}
 }
-void DenRoze3::remBill(){}
+void DenRoze3::remBill(){
+	if(this->bw->get_bill_table()->selectionModel()->hasSelection()){
+		for(auto s : this->bw->get_bill_table()->selectionModel()->selectedIndexes()){
+			int row = s.row();
+			billvector[activeBill].items.erase(billvector[activeBill].items.begin() + row);
+		}
+		refresh_bill();
+	}
+}
 
 void DenRoze3::addStock(){
 	items.emplace_back();
