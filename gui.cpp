@@ -94,9 +94,7 @@ void DenRoze3::refresh_bill(){
 	this->bw->get_bill_table()->clear();
 	this->bw->get_bill_table()->setRowCount(billvector[activeBill].items.size());
 
-	std::cout << billvector[activeBill].items.size() << std::endl;
 	for(size_t i = 0; i < billvector[activeBill].items.size(); i++){
-		std::cout << billvector[activeBill].items[i].item.name << std::endl;
 		this->bw->get_bill_table()->setItem(i, 0, new QTableWidgetItem(billvector[activeBill].items[i].item.name.c_str()));
 		this->bw->get_bill_table()->setItem(i, 1, new QTableWidgetItem(billvector[activeBill].items[i].item.price.c_str()));
 		this->bw->get_bill_table()->setItem(i, 2, new QTableWidgetItem(billvector[activeBill].items[i].item.dph.c_str()));
