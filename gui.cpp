@@ -8,24 +8,25 @@ DenRoze3::DenRoze3(QWidget *parent)
     , ui(new Ui::DenRoze3)
 {
     ui->setupUi(this);
-	this->activeWindow=1;
+	this->activeWindow=0;
 	
+	this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	this->ui->login_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	this->ui->stock_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	this->ui->bills_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	this->ui->orders_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
 	// widgets
 	this->lw = new login_widget{ui->login_widget};
 	this->sw = new stock_widget{ui->stock_widget};
 	this->bw = new bills_widget{ui->bills_widget};
 	this->ow = new orders_widget{ui->orders_widget};
-	/*
-	this->ui->login_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	this->ui->stock_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	this->ui->bills_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	this->ui->orders_widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
 	this->lw->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	this->sw->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	this->bw->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	this->ow->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-	*/
+	
 	// menu buttons
 	connect(lw->getButton(), SIGNAL(clicked()), SLOT(login()));
 	connect(ui->stock_button, SIGNAL(clicked()), SLOT(stock()));
@@ -61,7 +62,7 @@ DenRoze3::DenRoze3(QWidget *parent)
 	this->sw->get_stock_table()->setRowCount(items.size());
 	this->sw->get_stock_table()->setColumnCount(7);
 	
-	QList<QString>* stock_header = new QList<QString>();
+	stock_header = new QList<QString>();
 	stock_header->append(QString("id"));
 	stock_header->append(QString("name"));
 	stock_header->append(QString("code"));
@@ -69,27 +70,24 @@ DenRoze3::DenRoze3(QWidget *parent)
 	stock_header->append(QString("dph"));
 	stock_header->append(QString("count"));
 	stock_header->append(QString("mincount"));
-	this->sw->get_stock_table()->setHorizontalHeaderLabels(*stock_header);
 	connect(sw->getAdd(), SIGNAL(clicked()), SLOT(addStock()));
 	connect(sw->getRem(), SIGNAL(clicked()), SLOT(remStock()));
 
 	//bills
 	this->bw->get_stock_table()->setRowCount(items.size());
 	this->bw->get_stock_table()->setColumnCount(4);
-	QList<QString>* bill_stock_header = new QList<QString>();
+	bill_stock_header = new QList<QString>();
 	bill_stock_header->append(QString("name"));
 	bill_stock_header->append(QString("code"));
 	bill_stock_header->append(QString("price"));
 	bill_stock_header->append(QString("dph"));
-	this->bw->get_stock_table()->setHorizontalHeaderLabels(*bill_stock_header);
 
 	this->bw->get_bill_table()->setColumnCount(4);
-	QList<QString>* bill_item_header = new QList<QString>();
+	bill_item_header = new QList<QString>();
 	bill_item_header->append(QString("name"));
 	bill_item_header->append(QString("price"));
 	bill_item_header->append(QString("dph"));
 	bill_item_header->append(QString("count"));
-	this->bw->get_bill_table()->setHorizontalHeaderLabels(*bill_item_header);
 	connect(bw->getNext(), SIGNAL(clicked()), SLOT(nextBill()));
 	connect(bw->getPrev(), SIGNAL(clicked()), SLOT(prevBill()));
 	connect(bw->getAdd(), SIGNAL(clicked()), SLOT(addBill()));
@@ -99,20 +97,18 @@ DenRoze3::DenRoze3(QWidget *parent)
 	//orders
 	this->ow->get_stock_table()->setRowCount(items.size());
 	this->ow->get_stock_table()->setColumnCount(4);
-	QList<QString>* order_stock_header = new QList<QString>();
+	order_stock_header = new QList<QString>();
 	order_stock_header->append(QString("name"));
 	order_stock_header->append(QString("code"));
 	order_stock_header->append(QString("price"));
 	order_stock_header->append(QString("dph"));
-	this->ow->get_stock_table()->setHorizontalHeaderLabels(*bill_stock_header);
 
 	this->ow->get_order_table()->setColumnCount(4);
-	QList<QString>* order_item_header = new QList<QString>();
+	order_item_header = new QList<QString>();
 	order_item_header->append(QString("name"));
 	order_item_header->append(QString("price"));
 	order_item_header->append(QString("dph"));
 	order_item_header->append(QString("count"));
-	this->ow->get_order_table()->setHorizontalHeaderLabels(*order_item_header);
 	connect(ow->getNext(), SIGNAL(clicked()), SLOT(nextOrder()));
 	connect(ow->getPrev(), SIGNAL(clicked()), SLOT(prevOrder()));
 	connect(ow->getAdd(), SIGNAL(clicked()), SLOT(addOrder()));
@@ -128,6 +124,9 @@ void DenRoze3::refresh_bill(){
 	this->bw->getBillCurrent()->setText(std::to_string(activeBill).c_str());
 	this->bw->get_bill_table()->clear();
 	this->bw->get_bill_table()->setRowCount(billvector[activeBill].items.size());
+
+	this->bw->get_bill_table()->setHorizontalHeaderLabels(*bill_item_header);
+	this->bw->get_bill_table()->verticalHeader()->hide();
 
 	for(size_t i = 0; i < billvector[activeBill].items.size(); i++){
 		this->bw->get_bill_table()->setItem(i, 0, new QTableWidgetItem(billvector[activeBill].items[i].item.name.c_str()));
@@ -152,6 +151,9 @@ void DenRoze3::refresh_order(){
 	this->ow->get_order_table()->clear();
 	this->ow->get_order_table()->setRowCount(ordervector[activeOrder].items.size());
 
+	this->ow->get_order_table()->setHorizontalHeaderLabels(*order_item_header);
+	this->ow->get_order_table()->verticalHeader()->hide();
+
 	for(size_t i = 0; i < ordervector[activeOrder].items.size(); i++){
 		this->ow->get_order_table()->setItem(i, 0, new QTableWidgetItem(ordervector[activeOrder].items[i].item.name.c_str()));
 		this->ow->get_order_table()->setItem(i, 1, new QTableWidgetItem(ordervector[activeOrder].items[i].item.price.c_str()));
@@ -167,6 +169,16 @@ void DenRoze3::refresh_stock(){
 	this->bw->get_stock_table()->setRowCount(items.size());
 	this->ow->get_stock_table()->clear();
 	this->ow->get_stock_table()->setRowCount(items.size());
+
+	this->sw->get_stock_table()->setHorizontalHeaderLabels(*stock_header);
+	this->sw->get_stock_table()->verticalHeader()->hide();
+
+	this->bw->get_stock_table()->setHorizontalHeaderLabels(*bill_stock_header);
+	this->bw->get_stock_table()->verticalHeader()->hide();
+
+	this->ow->get_stock_table()->setHorizontalHeaderLabels(*order_stock_header);
+	this->ow->get_stock_table()->verticalHeader()->hide();
+
 	for(size_t i=0; i < items.size(); i++){
 		this->sw->get_stock_table()->setItem(i, 0, new QTableWidgetItem(items[i].id.c_str()));
 		this->sw->get_stock_table()->setItem(i, 1, new QTableWidgetItem(items[i].name.c_str()));

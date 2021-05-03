@@ -13,6 +13,8 @@
 #include "Customer.h"
 #include <vector>
 #include <iostream>
+#include <QSizePolicy>
+#include <QHeaderView>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class DenRoze3; }
@@ -34,6 +36,11 @@ public:
 	std::vector<Bill> billvector;
 	std::vector<Order> ordervector;
 	std::vector<Customer> customers;
+	QList<QString>* stock_header;
+	QList<QString>* bill_stock_header;
+	QList<QString>* bill_item_header;
+	QList<QString>* order_stock_header;
+	QList<QString>* order_item_header;
 	User activeUser;
 	int activeBill;
 	int activeOrder;
